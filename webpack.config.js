@@ -3,7 +3,6 @@ var path = require('path');
 const webpack = require('webpack');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const extractCSS = new ExtractTextPlugin('[name].bundle.css');
 const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -54,10 +53,8 @@ module.exports = {
         ]
     },
     plugins: [
-        extractCSS,
-        new HtmlWebpackPlugin({
-            template: 'src/index.html'
-        }),
+        new ExtractTextPlugin('[name].bundle.css'),
+        new HtmlWebpackPlugin({ template: 'src/index.html' }),
         new webpack.ProvidePlugin({
             $: "jquery",
             jQuery: "jquery"
