@@ -1,16 +1,17 @@
-var path = require('path');
-
-const webpack = require('webpack');
+const path = require('path');
+const _ = require('lodash');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/js/app.js',
+    entry: {
+        app: './src/js/app.js'
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js'
+        filename: '[name].js'
     },
     module: {
         rules: [
@@ -19,7 +20,7 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ["es2015"]
+                    presets: ['es2015']
                 }
             },
             {
@@ -54,10 +55,12 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin('[name].bundle.css'),
-        new HtmlWebpackPlugin({ template: 'src/index.html' }),
-        new webpack.ProvidePlugin({
-            $: "jquery",
-            jQuery: "jquery"
-        })
+        new HtmlWebpackPlugin({ template: 'src/index.ejs' })
     ]
 };
+
+Object.defineProperty(module.exports, 'extend', {
+    value(config) {
+        return _.merge({}, module.exports, config);
+    }
+});

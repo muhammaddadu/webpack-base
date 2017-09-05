@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+/**
+ * This file is just a helper to compile all examples.
+ *
+ * You could do the same by going into each example and execute
+ * `webpack`
+ */
+const fs = require('fs');
+const path = require('path');
+const rimraf = require('rimraf');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const examplesDirectory = path.resolve(__dirname, '../examples');
+
+const examples = fs.readdirSync(examplesDirectory)
+	.filter((fileName) => {
+		return fs.statSync(path.join(examplesDirectory, fileName)).isDirectory()
+	})
+	.map((fileName) => {
+		let examplePath = path.join(examplesDirectory, fileName);
+		let exampleWebpackConfigFilePath = path.join(examplePath, 'webpack.config');
+		let exampleWebpackConfig = require(exampleWebpackConfigFilePath);
+
+		return {
+			name: fileName,
+			webpackConfig: exampleWebpackConfig
+		};
+	});
+
+function buildWebpackExample(webpackConfig) {
+	let webpackOutputPath = webpackConfig.output.path;
+
+	// remove output folder
+	rimraf.sync(webpackOutputPath);
+
+	// run webpack
+	webpack(webpackConfig, function (err, stats) {
+		if (err) {
+			console.error(err.stack || err);
+			if (err.details) {
+				console.error(err.details);
+			}
+			return;
+		}
+
+		let info = stats.toJson();
+
+		if (stats.hasErrors()) {
+			console.error(info.errors);
+		}
+
+		if (stats.hasWarnings()) {
+			console.warn(info.warnings);
+		}
+	});
+}
+
+// build base
+let baseWebpackConfig = require('..');
+let injectedBaseConfig = baseWebpackConfig.extend({
+	plugins: [
+		...baseWebpackConfig.plugins, // bugfix until extend is refined
+		new webpack.DefinePlugin({
+		    examples: JSON.stringify(examples)
+		})
+	]
+});
+
+buildWebpackExample(injectedBaseConfig);
+
+// build examples
+examples.forEach(function (exampleMetadata) {
+	buildWebpackExample(exampleMetadata.webpackConfig);
+});
