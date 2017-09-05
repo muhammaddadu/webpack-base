@@ -33,6 +33,8 @@ npm run build
 
 * [A Beginner’s Guide to Webpack 2 and Module Bundling](https://www.sitepoint.com/beginners-guide-to-webpack-2-and-module-bundling/) - by [Mark Brown](https://www.sitepoint.com/author/mbrown/)
 
+* [Using Template Engines - jade/puge, js, underscore, handlebars, html-loader](https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md)
+
 ###### Authors
 
 ###### **Sophie Vanderveken & Muhammad Dadu** :shipit:
